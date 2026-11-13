@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Neha Mansoor, software engineer moving into AI engineering. Java, Kotlin, Python, computer vision.">
+<title>Neha Mansoor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: lab-notebook grid. Big name left, live neural net right, then ledger-style sections.
+   Palette: cool paper + ink, one cobalt accent, amber only for data highlights. */
+:root{
+  --bg:#F1F3F6; --bg2:#E6EAF0; --surface:#FFFFFF; --ink:#101734; --muted:#4A5370;
+  --line:#CBD2DE; --accent:#2B45F0; --accent-ink:#FFFFFF; --amber:#B86A00; --grid:rgba(16,23,52,.06);
+  --f-display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C101C; --bg2:#121830; --surface:#151B2E; --ink:#E9ECF7; --muted:#9AA3C0;
+    --line:#2A3250; --accent:#7C90FF; --accent-ink:#0C101C; --amber:#F2A93B; --grid:rgba(233,236,247,.05);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C101C; --bg2:#121830; --surface:#151B2E; --ink:#E9ECF7; --muted:#9AA3C0;
+  --line:#2A3250; --accent:#7C90FF; --accent-ink:#0C101C; --amber:#F2A93B; --grid:rgba(233,236,247,.05);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.02em;line-height:1.05}
+.mono{font-family:var(--f-mono)}
+.label{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
+.nav nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.nav nav a{color:var(--muted);text-decoration:none;font-size:14px;padding:6px 10px;border-radius:6px}
+.nav nav a:hover{color:var(--ink);background:var(--bg2)}
+.theme{font:inherit;font-size:13px;font-family:var(--f-mono);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 10px;border-radius:6px;cursor:pointer}
+.theme:hover{border-color:var(--accent)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center;padding-block:56px 40px}
+.hero h1{font-size:clamp(46px,8.5vw,96px);font-weight:800}
+.hero h1 span{display:block;color:var(--accent)}
+.role{margin:18px 0 0;font-family:var(--f-mono);font-size:15px;color:var(--muted);min-height:1.6em}
+.role b{color:var(--ink);font-weight:500}
+.caret{display:inline-block;width:8px;height:1.1em;background:var(--accent);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.lede{max-width:52ch;margin:20px 0 0;font-size:18px;color:var(--ink)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:600;font-size:15px;text-decoration:none;padding:11px 18px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:hover{filter:brightness(1.08)}
+.netbox{position:relative;border:1px solid var(--line);background:var(--surface);border-radius:12px;aspect-ratio:1/1;min-width:0;max-width:100%}
+#net{position:absolute;inset:0;width:100%;height:100%;display:block}
+.netcap{position:absolute;left:12px;bottom:10px;right:12px;display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;pointer-events:none}
+
+/* facts strip */
+.facts{border-block:1px solid var(--line);background:var(--surface)}
+.factsrow{display:grid;grid-template-columns:repeat(4,1fr)}
+.fact{padding:18px 16px;border-right:1px solid var(--line);min-width:0}
+.fact:last-child{border-right:0}
+.fact .n{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);letter-spacing:-.02em;line-height:1}
+.fact .t{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* sections */
+section{padding-block:64px 8px}
+.sec-head{display:grid;grid-template-columns:200px 1fr;gap:24px;margin-bottom:28px}
+.sec-head h2{font-size:clamp(30px,4.5vw,46px);font-weight:800}
+.about p{max-width:64ch;margin:0 0 14px;font-size:17px}
+.about-grid{display:grid;grid-template-columns:200px 1fr;gap:24px}
+
+/* skills */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{font:inherit;font-family:var(--f-mono);font-size:13px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:hover{border-color:var(--accent)}
+.skillgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.skill{border:1px solid var(--line);background:var(--surface);padding:12px 14px;border-radius:8px;min-width:0}
+.skill b{display:block;font-weight:600}
+.skill small{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.skill.learning small{color:var(--amber)}
+
+/* experience ledger */
+.ledger{border-top:1px solid var(--ink)}
+details.job{border-bottom:1px solid var(--line)}
+details.job summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:200px 1fr auto;gap:24px;padding:20px 0;align-items:baseline}
+details.job summary::-webkit-details-marker{display:none}
+.job .when{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.job h3{font-size:24px;font-weight:700}
+.job h3 small{display:block;font-family:var(--f-body);font-weight:500;font-size:15px;color:var(--muted);letter-spacing:0;margin-top:4px}
+.job .tog{font-family:var(--f-mono);font-size:20px;color:var(--accent);transition:transform .2s}
+details[open] .tog{transform:rotate(45deg)}
+.job .body{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-bottom:24px}
+.job ul{margin:0;padding-left:18px;max-width:68ch}
+.job li{margin-bottom:8px}
+.apps{margin-top:14px;font-size:15px;color:var(--muted)}
+
+/* projects */
+.proj{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:24px;margin-bottom:20px;min-width:0}
+.proj h3{font-size:clamp(24px,3.4vw,32px);font-weight:700}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 16px}
+.tag{font-family:var(--f-mono);font-size:12px;padding:3px 9px;border-radius:4px;background:var(--bg2);color:var(--ink)}
+.proj ul{margin:0 0 4px;padding-left:18px;max-width:75ch}
+.proj li{margin-bottom:7px}
+.lab{margin-top:22px;border:1px dashed var(--line);border-radius:10px;padding:18px;background:var(--bg)}
+.lab h4{margin:0 0 4px;font-family:var(--f-display);font-size:19px}
+.lab p{margin:0 0 14px;color:var(--muted);font-size:14.5px;max-width:70ch}
+.labgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.col{min-width:0}
+.col .ct{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.row{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:center;margin-bottom:12px;min-width:0}
+.row label{font-size:14px}
+.row input[type=range]{width:100%;accent-color:var(--accent);min-width:0}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:78px 1fr 52px;gap:10px;align-items:center;font-size:14px}
+.track{height:12px;background:var(--bg2);border-radius:3px;overflow:hidden;border:1px solid var(--line)}
+.fill{height:100%;background:var(--accent);width:0;transition:width .12s}
+.fill.amber{background:var(--amber)}
+.val{font-family:var(--f-mono);font-size:12px;text-align:right}
+.sum{margin-top:12px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.sum b{color:var(--ink)}
+
+/* apps + edu */
+.apps-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.app{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:14px;min-width:0}
+.app:hover{border-color:var(--accent)}
+.app b{display:block;font-family:var(--f-display);font-size:19px}
+.app span{font-size:13px;color:var(--muted)}
+.edu{display:grid;gap:0;border-top:1px solid var(--ink)}
+.edur{display:grid;grid-template-columns:200px 1fr;gap:24px;padding:18px 0;border-bottom:1px solid var(--line)}
+.edur h3{font-size:21px;font-weight:700}
+.edur p{margin:4px 0 0;color:var(--muted);font-size:15px}
+
+/* contact */
+.contact{background:var(--ink);color:var(--bg);border-radius:14px;padding:clamp(24px,5vw,48px);margin-block:24px 56px}
+.contact h2{font-size:clamp(32px,6vw,60px);font-weight:800;color:var(--bg)}
+.contact p{max-width:56ch;font-size:17px;margin:14px 0 22px;opacity:.9}
+.mail{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mail code{font-family:var(--f-mono);font-size:clamp(14px,2.6vw,18px);padding:10px 14px;border:1px solid color-mix(in srgb,var(--bg) 35%,transparent);border-radius:8px;user-select:all;overflow-wrap:anywhere}
+.contact .btn{background:var(--bg);color:var(--ink);border-color:var(--bg)}
+.status{font-family:var(--f-mono);font-size:13px;min-height:1.4em;margin-top:10px;opacity:.9}
+footer{padding-block:20px 40px;color:var(--muted);font-size:13px;font-family:var(--f-mono);border-top:1px solid var(--line)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding-block:36px 28px}
+  .netbox{max-width:420px;width:100%}
+  .factsrow{grid-template-columns:1fr 1fr}
+  .fact:nth-child(2){border-right:0}
+  .fact:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .sec-head,.about-grid,.edur,.job .body{grid-template-columns:1fr;gap:8px}
+  details.job summary{grid-template-columns:1fr auto;gap:4px 12px}
+  details.job summary .when{grid-column:1/-1}
+  .labgrid{grid-template-columns:1fr}
+  section{padding-top:48px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}.caret{animation:none}.fill,.tog{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">Neha Mansoor</a>
+    <nav aria-label="Sections">
+      <a href="#about">About</a><a href="#skills">Skills</a><a href="#work">Work</a><a href="#projects">Projects</a><a href="#contact">Contact</a>
+      <button class="theme" id="theme" type="button" aria-label="Switch color theme">theme</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <div class="hero">
+    <div>
+      <div class="label">Dayton, Ohio</div>
+      <h1 style="margin-top:14px">Neha<span>Mansoor</span></h1>
+      <p class="role" aria-live="off">I build <b id="role"></b><i class="caret"></i></p>
+      <p class="lede">Software engineer with production experience in Java, Kotlin and Python, now moving into AI engineering. I like systems that ship, scale and hold up under real users.</p>
+      <div class="cta">
+        <a class="btn" href="#projects">See my projects</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <div class="netbox" aria-hidden="true">
+      <canvas id="net"></canvas>
+      <div class="netcap"><span>move your cursor over the network</span><span>4 layers</span></div>
+    </div>
+  </div>
+</main>
+
+<div class="facts">
+  <div class="wrap factsrow">
+    <div class="fact"><div class="n">1M+</div><div class="t">downloads on a Google Play app I shipped code for</div></div>
+    <div class="fact"><div class="n">5</div><div class="t">branded apps built from one Android codebase</div></div>
+    <div class="fact"><div class="n">3.96</div><div class="t">GPA, M.S. Computer Science</div></div>
+    <div class="fact"><div class="n">2+ yrs</div><div class="t">professional software engineering</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="about" class="about">
+    <div class="about-grid">
+      <div class="label">About</div>
+      <div>
+        <p>I started in enterprise Java, building high-volume, low-latency applications for mission-critical systems. At Keen Info Tek I worked on a single Android codebase with multiple build variants that ships five finance apps, one of them with over a million downloads.</p>
+        <p>Along the way I picked up what production teams care about: REST integrations, CI/CD, testing, performance tuning and clear documentation. Now I am applying that foundation to deep learning, computer vision and LLM-powered applications.</p>
+        <p>I am open to remote freelance projects and full-time roles, including opportunities in the UAE.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="sec-head"><div class="label">Skills</div><h2>What I work with</h2></div>
+    <div class="chips" role="group" aria-label="Filter skills">
+      <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-f="ai" aria-pressed="false">AI</button>
+      <button class="chip" type="button" data-f="backend" aria-pressed="false">Backend</button>
+      <button class="chip" type="button" data-f="mobile" aria-pressed="false">Mobile</button>
+      <button class="chip" type="button" data-f="practice" aria-pressed="false">Practices</button>
+    </div>
+    <div class="skillgrid" id="skillgrid"></div>
+  </section>
+
+  <section id="work">
+    <div class="sec-head"><div class="label">Experience</div><h2>Where I have worked</h2></div>
+    <div class="ledger">
+      <details class="job" open>
+        <summary>
+          <span class="when">May 2022 to Feb 2024</span>
+          <h3>Software Developer<small>Keen Info Tek</small></h3>
+          <span class="tog" aria-hidden="true">+</span>
+        </summary>
+        <div class="body">
+          <span></span>
+          <div>
+            <ul>
+              <li>Contributed to a single production codebase with multiple build variants that ships five branded finance apps, working in a 7-person agile team across about 4 releases.</li>
+              <li>Improved app performance and responsiveness with RxJava and Kotlin, and removed null pointer crashes.</li>
+              <li>Integrated REST APIs and JSON data from backend services into app features.</li>
+              <li>Implemented a CI/CD pipeline for continuous integration and deployment.</li>
+              <li>Wrote unit tests, designed the test environment and kept technical documentation current.</li>
+              <li>Initiated an internal cross-platform Flutter app for staff, with REST API integration.</li>
+              <li>Mentored junior developers.</li>
+            </ul>
+            <div class="apps">Apps from this codebase on Google Play:
+              <a href="https://play.google.com/store/apps/details?id=com.serve.mobile">Serve</a>,
+              <a href="https://play.google.com/store/apps/details?id=com.bluebird.mobile">Bluebird</a>,
+              <a href="https://play.google.com/store/apps/details?id=com.incomm.spendwell">spendwell</a>,
+              <a href="https://play.google.com/store/apps/details?id=com.incomm.scarlet">Scarlet</a>,
+              <a href="https://play.google.com/store/apps/details?id=com.incomm.redcardreloadable">Red Card Reloadable</a>.
+            </div>
+          </div>
+        </div>
+      </details>
+      <details class="job">
+        <summary>
+          <span class="when">Jul 2021 to Apr 2022</span>
+          <h3>Java Developer<small>Tangensis Inc</small></h3>
+          <span class="tog" aria-hidden="true">+</span>
+        </summary>
+        <div class="body">
+          <span></span>
+          <ul>
+            <li>Designed, built and maintained high-volume, low-latency Java applications for mission-critical systems, delivering high availability and performance.</li>
+            <li>Contributed across the full development lifecycle, from requirements to release.</li>
+            <li>Wrote efficient, testable code; performed analysis, testing and debugging.</li>
+            <li>Identified and resolved production and non-production application issues.</li>
+            <li>Prepared software releases and supported continuous improvement of development processes.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="sec-head"><div class="label">Academic projects</div><h2>Things I built to learn</h2></div>
+
+    <article class="proj">
+      <h3>Attire Personality Index</h3>
+      <div class="tags"><span class="tag">Python</span><span class="tag">Keras</span><span class="tag">CNN</span><span class="tag">Computer vision</span><span class="tag">TensorBoard</span></div>
+      <ul>
+        <li>Built a multi-label computer vision model that classifies a person in an image as male or female and then identifies their attire type (formal, semiformal or casual), as part of a two-person team.</li>
+        <li>Designed a convolutional neural network with four Conv2D, max pooling and dropout blocks plus dense layers, using sigmoid outputs and binary cross-entropy loss so each label is predicted independently.</li>
+        <li>Collected a custom image dataset from e-commerce sites, then trained on 3,291 images and tested on 922 held-out images.</li>
+        <li>Built an inference step that resizes images to 400x400, normalizes them and returns the top predicted labels; tracked accuracy and loss with TensorBoard.</li>
+      </ul>
+
+      <div class="lab">
+        <h4>Try it: why this model uses sigmoid, not softmax</h4>
+        <p>An image can be both casual and semiformal, so the labels cannot compete for one probability. Move the scores below. Softmax forces the three values to add up to 100%. Sigmoid scores each label on its own.</p>
+        <div class="labgrid">
+          <div class="col">
+            <div class="ct">Raw scores</div>
+            <div class="row"><label for="s0">Formal</label><input id="s0" type="range" min="-6" max="6" step="0.1" value="-2.5"></div>
+            <div class="row"><label for="s1">Semiformal</label><input id="s1" type="range" min="-6" max="6" step="0.1" value="1.8"></div>
+            <div class="row"><label for="s2">Casual</label><input id="s2" type="range" min="-6" max="6" step="0.1" value="2.2"></div>
+          </div>
+          <div class="col">
+            <div class="ct">Softmax (one winner)</div>
+            <div class="bars" id="soft"></div>
+            <div class="sum" id="softsum"></div>
+          </div>
+          <div class="col">
+            <div class="ct">Sigmoid (independent)</div>
+            <div class="bars" id="sig"></div>
+            <div class="sum" id="sigsum"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="proj">
+      <h3>Mini Facebook</h3>
+      <div class="tags"><span class="tag">PHP</span><span class="tag">JavaScript</span><span class="tag">MySQL</span><span class="tag">Git</span><span class="tag">Web security</span></div>
+      <ul>
+        <li>Built a social media web app where users can post, comment and delete content, using PHP, HTML, JavaScript and a MySQL database.</li>
+        <li>Protected the app against common web attacks, including cross-site scripting (XSS), SQL injection and cross-site request forgery (CSRF).</li>
+        <li>Used Git and Bitbucket for team collaboration.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section id="education">
+    <div class="sec-head"><div class="label">Education</div><h2>Where I studied</h2></div>
+    <div class="edu">
+      <div class="edur"><span class="mono label" style="align-self:start;padding-top:4px">Aug 2019 to May 2021</span><div><h3>M.S. in Computer Science</h3><p>University of Dayton, Dayton, Ohio. GPA 3.96 / 4.0</p></div></div>
+      <div class="edur"><span class="mono label" style="align-self:start;padding-top:4px">Aug 2012 to May 2016</span><div><h3>B.Tech in Computer Science and Engineering</h3><p>Chaitanya Bharathi Institute of Technology (CBIT), Proddatur, India</p></div></div>
+    </div>
+  </section>
+
+  <section id="contact" style="padding-top:56px">
+    <div class="contact">
+      <div class="label" style="color:var(--bg);opacity:.7">Contact</div>
+      <h2 style="margin-top:10px">Let us build something.</h2>
+      <p>I am available for remote freelance projects in backend development, API work and AI-powered features, and open to full-time roles.</p>
+      <div class="mail">
+        <code id="email">nehamansoor.s@gmail.com</code>
+        <button class="btn" id="copy" type="button">Copy email</button>
+      </div>
+      <div style="margin-top:14px;font-size:15px">GitHub: <a href="https://github.com/Neha-Mansoor28" style="color:var(--bg)">github.com/Neha-Mansoor28</a></div>
+      <div class="status" id="status" role="status"></div>
+    </div>
+  </section>
+
+  <footer>Neha Mansoor &middot; Dayton, Ohio, USA</footer>
+</div>
+
+<script>
+(function(){
+  // theme toggle
+  var root=document.documentElement;
+  function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches}
+  var tb=document.getElementById('theme');
+  function label(){tb.textContent=isDark()?'light mode':'dark mode'}
+  tb.addEventListener('click',function(){root.setAttribute('data-theme',isDark()?'light':'dark');label()});
+  label();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener&&window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',label);
+
+  // role rotator
+  var roles=['reliable backend systems','production Android apps','REST APIs that scale','computer vision models','LLM-powered tools'];
+  var el=document.getElementById('role'),ri=0,ci=0,del=false;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){el.textContent=roles[0]}
+  else{(function tick(){
+    var w=roles[ri];
+    if(!del){ci++;el.textContent=w.slice(0,ci);if(ci===w.length){del=true;return setTimeout(tick,1600)}return setTimeout(tick,55)}
+    ci--;el.textContent=w.slice(0,ci);if(ci===0){del=false;ri=(ri+1)%roles.length;return setTimeout(tick,300)}
+    setTimeout(tick,28);
+  })()}
+
+  // skills
+  var skills=[
+    ['Deep learning (CNNs)','ai','learning'],['Keras','ai','learning'],['TensorBoard','ai','learning'],['Image classification','ai','learning'],['LLM APIs and prompting','ai','learning'],['Python','ai',''],
+    ['Java and Java EE','backend',''],['SQL and relational design','backend',''],['RESTful web services','backend',''],['High-volume, low-latency design','backend',''],
+    ['Kotlin','mobile',''],['Android','mobile',''],['Flutter','mobile',''],['RxJava','mobile',''],
+    ['CI/CD','practice',''],['Git','practice',''],['Unit and system testing','practice',''],['Agile delivery','practice',''],['Technical documentation','practice','']
+  ];
+  var names={ai:'AI and ML',backend:'Backend',mobile:'Mobile',practice:'Practice'};
+  var grid=document.getElementById('skillgrid');
+  skills.forEach(function(s){
+    var d=document.createElement('div');d.className='skill'+(s[2]?' learning':'');d.dataset.g=s[1];
+    d.innerHTML='<b></b><small></small>';d.querySelector('b').textContent=s[0];
+    d.querySelector('small').textContent=s[2]?names[s[1]]+' / learning':names[s[1]];
+    grid.appendChild(d);
+  });
+  var chips=document.querySelectorAll('.chip');
+  chips.forEach(function(c){c.addEventListener('click',function(){
+    chips.forEach(function(x){x.setAttribute('aria-pressed','false')});c.setAttribute('aria-pressed','true');
+    var f=c.dataset.f;grid.querySelectorAll('.skill').forEach(function(s){s.hidden=!(f==='all'||s.dataset.g===f)});
+  })});
+
+  // sigmoid vs softmax lab
+  var labels=['Formal','Semiformal','Casual'];
+  function mk(id,amber){var h='';labels.forEach(function(l,i){h+='<div class="bar"><span>'+l+'</span><div class="track"><div class="fill'+(amber?' amber':'')+'" id="'+id+i+'"></div></div><span class="val" id="'+id+'v'+i+'">0%</span></div>'});document.getElementById(id==='f'?'soft':'sig').innerHTML=h}
+  mk('f',false);mk('g',true);
+  function upd(){
+    var z=[0,1,2].map(function(i){return parseFloat(document.getElementById('s'+i).value)});
+    var m=Math.max.apply(null,z),e=z.map(function(v){return Math.exp(v-m)}),se=e.reduce(function(a,b){return a+b},0);
+    var sm=e.map(function(v){return v/se}),sg=z.map(function(v){return 1/(1+Math.exp(-v))});
+    var ssum=0,gsum=0;
+    for(var i=0;i<3;i++){
+      document.getElementById('f'+i).style.width=(sm[i]*100)+'%';document.getElementById('fv'+i).textContent=(sm[i]*100).toFixed(0)+'%';
+      document.getElementById('g'+i).style.width=(sg[i]*100)+'%';document.getElementById('gv'+i).textContent=(sg[i]*100).toFixed(0)+'%';
+      ssum+=sm[i];gsum+=sg[i];
+    }
+    document.getElementById('softsum').innerHTML='Total: <b>'+(ssum*100).toFixed(0)+'%</b>, always';
+    document.getElementById('sigsum').innerHTML='Total: <b>'+(gsum*100).toFixed(0)+'%</b>, can be anything';
+  }
+  [0,1,2].forEach(function(i){document.getElementById('s'+i).addEventListener('input',upd)});
+  upd();
+
+  // copy email
+  var st=document.getElementById('status');
+  document.getElementById('copy').addEventListener('click',function(){
+    var t=document.getElementById('email').textContent;
+    function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('email'));var s=window.getSelection();s.removeAllRanges();s.addRange(r);st.textContent='Address selected. Press copy on your keyboard.'}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){st.textContent='Email copied.'},sel)}else{sel()}
+  });
+
+  // neural network canvas
+  var cv=document.getElementById('net'),ctx=cv.getContext('2d'),W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  var layers=[3,5,5,3],nodes=[],mouse={x:-999,y:-999};
+  function size(){var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    nodes=[];var padX=W*0.12,padY=H*0.14;
+    layers.forEach(function(n,li){for(var i=0;i<n;i++){nodes.push({l:li,i:i,x:padX+(W-2*padX)*li/(layers.length-1),y:padY+(H-2*padY-26)*(n===1?.5:i/(n-1))})}})}
+  function col(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    var line=col('--line'),acc=col('--accent'),ink=col('--ink'),amb=col('--amber');
+    nodes.forEach(function(n){
+      var dx=n.x-mouse.x,dy=n.y-mouse.y,near=Math.max(0,1-Math.sqrt(dx*dx+dy*dy)/(W*0.28));
+      n.a=Math.min(1,0.5+0.5*Math.sin(t*0.0016-n.l*1.3+n.i*0.9)*0.6+near*0.9);
+      n.near=near;
+    });
+    ctx.lineWidth=1;
+    nodes.forEach(function(a){nodes.forEach(function(b){
+      if(b.l!==a.l+1)return;
+      var s=Math.min(1,(a.a+b.a)/2*0.9+(a.near+b.near)*0.4);
+      ctx.globalAlpha=0.18+0.6*s*s;ctx.strokeStyle=s>0.62?acc:line;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    })});
+    ctx.globalAlpha=1;
+    nodes.forEach(function(n){
+      var r=7+n.a*5+n.near*5;
+      ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);
+      ctx.fillStyle=n.l===layers.length-1?amb:acc;ctx.globalAlpha=0.25+0.75*n.a;ctx.fill();
+      ctx.globalAlpha=1;ctx.lineWidth=1.5;ctx.strokeStyle=ink;ctx.stroke();
+    });
+  }
+  size();
+  window.addEventListener('resize',function(){size();if(reduce)draw(2000)});
+  var box=cv.parentNode;
+  box.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top});
+  box.addEventListener('pointerleave',function(){mouse.x=-999;mouse.y=-999});
+  if(reduce){draw(2000)}else{(function loop(t){draw(t);requestAnimationFrame(loop)})(0)}
+})();
+</script>
+
+</body>
+</html>
